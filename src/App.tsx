@@ -7,9 +7,10 @@ import { PaintTheme } from './themes/PaintTheme'
 import { BubblesTheme } from './themes/BubblesTheme'
 import { FireTheme } from './themes/FireTheme'
 import { WhiteboardTheme } from './themes/WhiteboardTheme'
+import { ThereminTheme } from './themes/ThereminTheme'
 import './App.css'
 
-type AppMode = 'playground' | 'whiteboard' | 'photobooth';
+type AppMode = 'playground' | 'whiteboard' | 'photobooth' | 'theremin';
 
 function App() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -24,10 +25,11 @@ function App() {
 
   const playgroundThemes = useMemo(() => [new GardenTheme(), new CosmicTheme(), new PaintTheme(), new BubblesTheme(), new FireTheme()], []);
   const whiteboardTheme = useMemo(() => new WhiteboardTheme(), []);
+  const thereminTheme = useMemo(() => new ThereminTheme(), []);
   
   const [activeThemeIdx, setActiveThemeIdx] = useState(0);
   
-  const activeTheme = mode === 'whiteboard' ? whiteboardTheme : playgroundThemes[activeThemeIdx];
+  const activeTheme = mode === 'whiteboard' ? whiteboardTheme : (mode === 'theremin' ? thereminTheme : playgroundThemes[activeThemeIdx]);
 
   const [toast, setToast] = useState<{msg: string, id: number} | null>(null);
 
@@ -158,12 +160,13 @@ function App() {
             <option value="playground">Playground</option>
             <option value="whiteboard">Whiteboard</option>
             <option value="photobooth">Photo Booth</option>
+            <option value="theremin">Theremin (Audio)</option>
           </select>
         </label>
       </div>
 
       <div className="settings-panel">
-        {mode !== 'whiteboard' && (
+        {mode === 'playground' && (
           <label>
             Theme:
             <select value={activeThemeIdx} onChange={e => setActiveThemeIdx(Number(e.target.value))}>
@@ -186,8 +189,9 @@ function App() {
           />
         </label>
 
-        {mode !== 'whiteboard' && <p>✌️ Peace sign to cycle themes</p>}
-        {mode === 'photobooth' ? <p>👍 Thumbs up to start countdown</p> : <p>👍 Thumbs up to capture photo</p>}
+        {mode === 'playground' && <p>✌️ Peace sign to cycle themes</p>}
+        {mode === 'photobooth' ? <p>👍 Thumbs up to start countdown</p> : (mode !== 'theremin' && <p>👍 Thumbs up to capture photo</p>)}
+        {mode === 'theremin' && <p>↕️ Hand Y = Pitch, ↔️ Hand X = Volume. 🤏 Pinch for Vibrato. ✊ Fist to silence.</p>}
       </div>
 
       {mode === 'photobooth' && gallery.length > 0 && (

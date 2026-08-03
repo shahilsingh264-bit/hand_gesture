@@ -20,7 +20,12 @@ export const useGameEngine = (
     if (canvasRef.current) {
       activeTheme.init(canvasRef.current.getContext('2d')!, canvasRef.current.width, canvasRef.current.height);
     }
-  }, [activeTheme]);
+    return () => {
+      if (activeTheme.cleanup) {
+        activeTheme.cleanup();
+      }
+    };
+  }, [activeTheme, canvasRef]);
 
   useEffect(() => {
     if (!isLoaded || !handLandmarker || !videoRef.current || !canvasRef.current) return;
