@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Gesture Garden</string>
+    <string name="title_activity_main">Gesture Garden</string>
+    <string name="package_name">com.shahil.gesturegarden</string>
+    <string name="custom_url_scheme">com.shahil.gesturegarden</string>
+</resources>
