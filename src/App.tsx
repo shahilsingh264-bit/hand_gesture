@@ -8,9 +8,13 @@ import { BubblesTheme } from './themes/BubblesTheme'
 import { FireTheme } from './themes/FireTheme'
 import { WhiteboardTheme } from './themes/WhiteboardTheme'
 import { ThereminTheme } from './themes/ThereminTheme'
+import { PotteryTheme } from './themes/PotteryTheme'
+import { ShadowPuppetTheme } from './themes/ShadowPuppetTheme'
+import { MeasureTheme } from './themes/MeasureTheme'
+import { StorybookTheme } from './themes/StorybookTheme'
 import './App.css'
 
-type AppMode = 'playground' | 'whiteboard' | 'photobooth' | 'theremin';
+type AppMode = 'playground' | 'whiteboard' | 'photobooth' | 'theremin' | 'pottery' | 'shadowpuppets' | 'measure' | 'storybook';
 
 function App() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -26,10 +30,20 @@ function App() {
   const playgroundThemes = useMemo(() => [new GardenTheme(), new CosmicTheme(), new PaintTheme(), new BubblesTheme(), new FireTheme()], []);
   const whiteboardTheme = useMemo(() => new WhiteboardTheme(), []);
   const thereminTheme = useMemo(() => new ThereminTheme(), []);
+  const potteryTheme = useMemo(() => new PotteryTheme(), []);
+  const shadowPuppetTheme = useMemo(() => new ShadowPuppetTheme(), []);
+  const measureTheme = useMemo(() => new MeasureTheme(), []);
+  const storybookTheme = useMemo(() => new StorybookTheme(), []);
   
   const [activeThemeIdx, setActiveThemeIdx] = useState(0);
   
-  const activeTheme = mode === 'whiteboard' ? whiteboardTheme : (mode === 'theremin' ? thereminTheme : playgroundThemes[activeThemeIdx]);
+  const activeTheme = mode === 'whiteboard' ? whiteboardTheme : 
+                      mode === 'theremin' ? thereminTheme : 
+                      mode === 'pottery' ? potteryTheme :
+                      mode === 'shadowpuppets' ? shadowPuppetTheme :
+                      mode === 'measure' ? measureTheme :
+                      mode === 'storybook' ? storybookTheme :
+                      playgroundThemes[activeThemeIdx];
 
   const [toast, setToast] = useState<{msg: string, id: number} | null>(null);
 
@@ -161,6 +175,10 @@ function App() {
             <option value="whiteboard">Whiteboard</option>
             <option value="photobooth">Photo Booth</option>
             <option value="theremin">Theremin (Audio)</option>
+            <option value="pottery">Virtual Pottery</option>
+            <option value="shadowpuppets">Shadow Puppets</option>
+            <option value="measure">AR Measure</option>
+            <option value="storybook">Kids Storybook</option>
           </select>
         </label>
       </div>
@@ -190,8 +208,12 @@ function App() {
         </label>
 
         {mode === 'playground' && <p>✌️ Peace sign to cycle themes</p>}
-        {mode === 'photobooth' ? <p>👍 Thumbs up to start countdown</p> : (mode !== 'theremin' && <p>👍 Thumbs up to capture photo</p>)}
+        {mode === 'photobooth' ? <p>👍 Thumbs up to start countdown</p> : (mode === 'playground' && <p>👍 Thumbs up to capture photo</p>)}
         {mode === 'theremin' && <p>↕️ Hand Y = Pitch, ↔️ Hand X = Volume. 🤏 Pinch for Vibrato. ✊ Fist to silence.</p>}
+        {mode === 'pottery' && <p>🤏 Pinch near the wheel to shape the spinning clay!</p>}
+        {mode === 'shadowpuppets' && <p>🐶 Make dog ears (index+pinky), or 🦅 a bird (thumb up)!</p>}
+        {mode === 'measure' && <p>🤏 Pinch and drag to measure objects in your view!</p>}
+        {mode === 'storybook' && <p>👋 Swipe to turn pages. 🪄 Point to interact with the story!</p>}
       </div>
 
       {mode === 'photobooth' && gallery.length > 0 && (
