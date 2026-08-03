@@ -14,7 +14,7 @@ export class MeasureTheme implements Theme {
   update() {}
 
   handleGesture(hand: HandState, ctx: CanvasRenderingContext2D, width: number, height: number, getX: (x: number) => number, getY: (y: number) => number, timestamp: number): void {
-    const { gesture, rawLandmarks } = hand;
+    const { currentGesture: gesture, landmarks: rawLandmarks } = hand;
     const indexTip = rawLandmarks[8];
     
     const px = getX(indexTip.x);

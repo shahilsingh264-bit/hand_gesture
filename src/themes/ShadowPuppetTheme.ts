@@ -10,7 +10,7 @@ export class ShadowPuppetTheme implements Theme {
   update() {}
 
   handleGesture(hand: HandState, ctx: CanvasRenderingContext2D, width: number, height: number, getX: (x: number) => number, getY: (y: number) => number, timestamp: number): void {
-    const { rawLandmarks } = hand;
+    const { landmarks: rawLandmarks } = hand;
     
     // We can do simple heuristic checks for shadow puppets.
     // Dog: Index and Pinky up (ears), others curled (snout)

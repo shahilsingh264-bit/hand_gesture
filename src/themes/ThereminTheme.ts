@@ -40,7 +40,7 @@ export class ThereminTheme implements Theme {
     this.initAudio();
 
     if (this.osc && this.gain && this.filter) {
-      const { gesture, rawLandmarks } = hand;
+      const { currentGesture: gesture, landmarks: rawLandmarks } = hand;
       const indexTip = rawLandmarks[8];
       
       // Calculate screen positions using our getX/getY mappers
