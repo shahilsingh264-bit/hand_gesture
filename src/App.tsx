@@ -10,13 +10,14 @@ import { WhiteboardTheme } from './themes/WhiteboardTheme'
 import { ThereminTheme } from './themes/ThereminTheme'
 import { PotteryTheme } from './themes/PotteryTheme'
 import { ShadowPuppetTheme } from './themes/ShadowPuppetTheme'
-import { MeasureTheme } from './themes/MeasureTheme'
-import { StorybookTheme } from './themes/StorybookTheme'
 import { FruitSlasherTheme } from './themes/FruitSlasherTheme'
 import { RPSTheme } from './themes/RPSTheme'
+import { WhackAMoleTheme } from './themes/WhackAMoleTheme'
+import { FlappyHandTheme } from './themes/FlappyHandTheme'
+import { CatchStarsTheme } from './themes/CatchStarsTheme'
 import './App.css'
 
-type AppMode = 'playground' | 'whiteboard' | 'photobooth' | 'theremin' | 'pottery' | 'shadowpuppets' | 'measure' | 'storybook' | 'fruitslasher' | 'rps';
+type AppMode = 'playground' | 'whiteboard' | 'photobooth' | 'theremin' | 'pottery' | 'shadowpuppets' | 'measure' | 'storybook' | 'fruitslasher' | 'rps' | 'whackamole' | 'flappyhand' | 'catchstars';
 
 function App() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -38,6 +39,9 @@ function App() {
   const storybookTheme = useMemo(() => new StorybookTheme(), []);
   const fruitSlasherTheme = useMemo(() => new FruitSlasherTheme(), []);
   const rpsTheme = useMemo(() => new RPSTheme(), []);
+  const whackAMoleTheme = useMemo(() => new WhackAMoleTheme(), []);
+  const flappyHandTheme = useMemo(() => new FlappyHandTheme(), []);
+  const catchStarsTheme = useMemo(() => new CatchStarsTheme(), []);
   
   const [activeThemeIdx, setActiveThemeIdx] = useState(0);
   
@@ -49,6 +53,9 @@ function App() {
                       mode === 'storybook' ? storybookTheme :
                       mode === 'fruitslasher' ? fruitSlasherTheme :
                       mode === 'rps' ? rpsTheme :
+                      mode === 'whackamole' ? whackAMoleTheme :
+                      mode === 'flappyhand' ? flappyHandTheme :
+                      mode === 'catchstars' ? catchStarsTheme :
                       playgroundThemes[activeThemeIdx];
 
   const [toast, setToast] = useState<{msg: string, id: number} | null>(null);
@@ -188,6 +195,9 @@ function App() {
             <option disabled>--- Games ---</option>
             <option value="fruitslasher">Fruit Slasher</option>
             <option value="rps">Rock Paper Scissors</option>
+            <option value="whackamole">Whack-a-Mole</option>
+            <option value="flappyhand">Flappy Hand</option>
+            <option value="catchstars">Catch the Stars</option>
           </select>
         </label>
       </div>
@@ -225,6 +235,9 @@ function App() {
         {mode === 'storybook' && <p>👋 Swipe to turn pages. 🪄 Point to interact with the story!</p>}
         {mode === 'fruitslasher' && <p>⚔️ Use Point or Open Palm to slice the fruits!</p>}
         {mode === 'rps' && <p>👍 Thumbs Up to start countdown. Then play Rock ✊, Paper 🖐️, or Scissors ✌️!</p>}
+        {mode === 'whackamole' && <p>🔨 Use Fist or Point to whack the monsters when they pop up!</p>}
+        {mode === 'flappyhand' && <p>🐦 Pinch or Point and move your hand Up/Down to fly through pipes!</p>}
+        {mode === 'catchstars' && <p>🖐️ Use an Open Palm as a basket. Move left and right to catch stars!</p>}
       </div>
 
       {mode === 'photobooth' && gallery.length > 0 && (

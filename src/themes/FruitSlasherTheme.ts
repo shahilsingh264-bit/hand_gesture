@@ -44,7 +44,7 @@ export class FruitSlasherTheme implements Theme {
       x, y,
       vx: (Math.random() - 0.5) * 8 * (width / 800), // scale velocity by screen size roughly
       vy: -15 - Math.random() * 10,
-      radius: 40,
+      radius: 80,
       emoji: isBomb ? '💣' : FRUITS[Math.floor(Math.random() * FRUITS.length)],
       isSliced: false,
       sliceAngle: 0,
@@ -194,7 +194,7 @@ export class FruitSlasherTheme implements Theme {
     }
 
     // Render Fruits
-    ctx.font = '60px Arial';
+    ctx.font = '120px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
