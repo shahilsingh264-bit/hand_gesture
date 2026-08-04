@@ -123,7 +123,7 @@ function App() {
       if (modeRef.current === 'photobooth') {
          // Start countdown
          setCountdown(3);
-      } else {
+      } else if (modeRef.current === 'playground') {
          handleCapture();
       }
     }
