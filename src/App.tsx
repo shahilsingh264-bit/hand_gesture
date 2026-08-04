@@ -12,9 +12,11 @@ import { PotteryTheme } from './themes/PotteryTheme'
 import { ShadowPuppetTheme } from './themes/ShadowPuppetTheme'
 import { MeasureTheme } from './themes/MeasureTheme'
 import { StorybookTheme } from './themes/StorybookTheme'
+import { FruitSlasherTheme } from './themes/FruitSlasherTheme'
+import { RPSTheme } from './themes/RPSTheme'
 import './App.css'
 
-type AppMode = 'playground' | 'whiteboard' | 'photobooth' | 'theremin' | 'pottery' | 'shadowpuppets' | 'measure' | 'storybook';
+type AppMode = 'playground' | 'whiteboard' | 'photobooth' | 'theremin' | 'pottery' | 'shadowpuppets' | 'measure' | 'storybook' | 'fruitslasher' | 'rps';
 
 function App() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -34,6 +36,8 @@ function App() {
   const shadowPuppetTheme = useMemo(() => new ShadowPuppetTheme(), []);
   const measureTheme = useMemo(() => new MeasureTheme(), []);
   const storybookTheme = useMemo(() => new StorybookTheme(), []);
+  const fruitSlasherTheme = useMemo(() => new FruitSlasherTheme(), []);
+  const rpsTheme = useMemo(() => new RPSTheme(), []);
   
   const [activeThemeIdx, setActiveThemeIdx] = useState(0);
   
@@ -43,6 +47,8 @@ function App() {
                       mode === 'shadowpuppets' ? shadowPuppetTheme :
                       mode === 'measure' ? measureTheme :
                       mode === 'storybook' ? storybookTheme :
+                      mode === 'fruitslasher' ? fruitSlasherTheme :
+                      mode === 'rps' ? rpsTheme :
                       playgroundThemes[activeThemeIdx];
 
   const [toast, setToast] = useState<{msg: string, id: number} | null>(null);
@@ -179,6 +185,9 @@ function App() {
             <option value="shadowpuppets">Shadow Puppets</option>
             <option value="measure">AR Measure</option>
             <option value="storybook">Kids Storybook</option>
+            <option disabled>--- Games ---</option>
+            <option value="fruitslasher">Fruit Slasher</option>
+            <option value="rps">Rock Paper Scissors</option>
           </select>
         </label>
       </div>
@@ -214,6 +223,8 @@ function App() {
         {mode === 'shadowpuppets' && <p>🐶 Make dog ears (index+pinky), or 🦅 a bird (thumb up)!</p>}
         {mode === 'measure' && <p>🤏 Pinch and drag to measure objects in your view!</p>}
         {mode === 'storybook' && <p>👋 Swipe to turn pages. 🪄 Point to interact with the story!</p>}
+        {mode === 'fruitslasher' && <p>⚔️ Use Point or Open Palm to slice the fruits!</p>}
+        {mode === 'rps' && <p>👍 Thumbs Up to start countdown. Then play Rock ✊, Paper 🖐️, or Scissors ✌️!</p>}
       </div>
 
       {mode === 'photobooth' && gallery.length > 0 && (

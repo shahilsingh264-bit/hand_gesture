@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { HandLandmarker } from '@mediapipe/tasks-vision';
 import { GestureEngine } from './gestureEngine';
 import type { Theme } from './themes/Theme';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 export const useGameEngine = (
   videoRef: React.RefObject<HTMLVideoElement | null>,
@@ -69,6 +70,12 @@ export const useGameEngine = (
              const prev = prevGestures.current.get(handId);
              if (hand.currentGesture !== prev && hand.currentGesture !== 'None') {
                 onGestureFire(hand.currentGesture);
+                // Trigger subtle haptic feedback for sensory polish
+                try {
+                  Haptics.impact({ style: ImpactStyle.Light });
+                } catch (e) {
+                  // Ignore if not on a supported device
+                }
              }
              prevGestures.current.set(handId, hand.currentGesture);
 
