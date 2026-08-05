@@ -26,7 +26,7 @@ type AppMode = 'playground' | 'whiteboard' | 'photobooth' | 'theremin' | 'potter
 function App() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const { isLoaded, handLandmarker } = useHandTracking()
+  const { isLoaded, handLandmarker, error: aiError } = useHandTracking();
   const [cameraActive, setCameraActive] = useState(false)
 
   const [mode, setMode] = useState<AppMode>('playground');
@@ -207,7 +207,8 @@ function App() {
 
   return (
     <div className="app-container">
-      {!isLoaded && <div className="loading">Loading AI Engine...</div>}
+      {!isLoaded && !aiError && <div className="loading">Loading AI Engine...</div>}
+      {aiError && <div className="loading" style={{color: 'red', fontSize: '14px', maxWidth: '80%'}}>AI Error: {aiError}</div>}
       
       <video ref={videoRef} className="webcam-video" playsInline muted />
       <canvas ref={canvasRef} className="render-canvas" />
