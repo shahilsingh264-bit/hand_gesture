@@ -6,6 +6,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,6 +34,11 @@ jobs:
       - name: Build Web App
         run: npm run build
 
+      - name: Zip Web Assets (For OTA)
+        run: |
+          cd dist
+          zip -r ../dist.zip .
+
       - name: Sync Capacitor
         run: npx cap sync android
 
@@ -45,3 +53,12 @@ jobs:
         with:
           name: gesture-garden-app
           path: android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Create GitHub Release (OTA Update)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Release v1.0.${{ github.run_number }}
+          files: dist.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

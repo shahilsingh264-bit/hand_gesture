@@ -17,6 +17,8 @@ import { RPSTheme } from './themes/RPSTheme'
 import { WhackAMoleTheme } from './themes/WhackAMoleTheme'
 import { FlappyHandTheme } from './themes/FlappyHandTheme'
 import { CatchStarsTheme } from './themes/CatchStarsTheme'
+import { CapacitorUpdater } from '@capgo/capacitor-updater'
+import { Capacitor } from '@capacitor/core'
 import './App.css'
 
 type AppMode = 'playground' | 'whiteboard' | 'photobooth' | 'theremin' | 'pottery' | 'shadowpuppets' | 'measure' | 'storybook' | 'fruitslasher' | 'rps' | 'whackamole' | 'flappyhand' | 'catchstars';
@@ -82,6 +84,45 @@ function App() {
       }
     };
     startCamera();
+
+    // Setup OTA Updates
+    if (Capacitor.isNativePlatform()) {
+      CapacitorUpdater.notifyAppReady();
+
+      const checkForUpdates = async () => {
+        try {
+          const res = await fetch('https://api.github.com/repos/shahilsingh264-bit/hand_gesture/releases/latest');
+          if (!res.ok) return;
+          const release = await res.json();
+          
+          // Using localStorage to track our current installed OTA version
+          // If this is the very first install from APK, we might not have a version,
+          // but we can assume we want the latest anyway.
+          const currentVersion = localStorage.getItem('ota_version');
+          
+          if (release.tag_name && release.tag_name !== currentVersion) {
+             const zipAsset = release.assets.find((a: any) => a.name === 'dist.zip');
+             if (zipAsset) {
+                const wantUpdate = window.confirm(`New feature update available (${release.name || release.tag_name})! Download and install now?`);
+                if (wantUpdate) {
+                   setToast({ msg: 'Downloading update...', id: Date.now() });
+                   const version = await CapacitorUpdater.download({
+                      url: zipAsset.browser_download_url,
+                      version: release.tag_name
+                   });
+                   localStorage.setItem('ota_version', release.tag_name);
+                   await CapacitorUpdater.set({ id: version.id });
+                }
+             }
+          }
+        } catch (err) {
+          console.error("Update check failed:", err);
+        }
+      };
+      
+      checkForUpdates();
+    }
+
     return () => {
       if (stream) stream.getTracks().forEach(track => track.stop());
     };
