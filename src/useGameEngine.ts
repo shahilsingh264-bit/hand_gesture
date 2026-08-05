@@ -38,6 +38,14 @@ export const useGameEngine = (
 
     let animationFrameId: number;
     let lastVideoTime = -1;
+    let lastAiRunTime = 0;
+    const aiThrottleMs = 1000 / 15; // 15 FPS for AI processing
+
+    // Reusable offscreen canvas for color picking to prevent memory leaks
+    const offCanvas = document.createElement('canvas');
+    offCanvas.width = 1; 
+    offCanvas.height = 1;
+    const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
 
     const renderLoop = () => {
       if (canvas.width !== video.clientWidth || canvas.height !== video.clientHeight) {
@@ -54,9 +62,11 @@ export const useGameEngine = (
       activeTheme.update(w, h);
 
       if (video.currentTime !== lastVideoTime) {
-        lastVideoTime = video.currentTime;
-        
-        const results = handLandmarker.detectForVideo(video, now);
+        if (now - lastAiRunTime > aiThrottleMs) {
+          lastAiRunTime = now;
+          lastVideoTime = video.currentTime;
+          
+          const results = handLandmarker.detectForVideo(video, now);
         
         if (results.landmarks && results.handednesses) {
           const hands = engineRef.current.processHands(results.landmarks, results.handednesses, sensitivity);
@@ -79,37 +89,30 @@ export const useGameEngine = (
              }
              prevGestures.current.set(handId, hand.currentGesture);
 
-             // Draw skeleton
+             // Draw skeleton (Optimized batch drawing)
              ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
              ctx.lineWidth = 1;
              const connections = [[0,1,2,3,4], [0,5,6,7,8], [5,9,13,17], [9,10,11,12], [13,14,15,16], [0,17,18,19,20]];
+             
+             ctx.beginPath();
              connections.forEach(path => {
-               ctx.beginPath();
                ctx.moveTo(getX(hand.landmarks[path[0]].x), getY(hand.landmarks[path[0]].y));
                for (let i = 1; i < path.length; i++) {
                  ctx.lineTo(getX(hand.landmarks[path[i]].x), getY(hand.landmarks[path[i]].y));
                }
-               ctx.stroke();
              });
+             ctx.stroke();
+
              ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+             ctx.beginPath();
              hand.landmarks.forEach(lm => {
-               ctx.beginPath();
+               ctx.moveTo(getX(lm.x), getY(lm.y));
                ctx.arc(getX(lm.x), getY(lm.y), 2, 0, 2 * Math.PI);
-               ctx.fill();
              });
+             ctx.fill();
 
              const getColor = (nx: number, ny: number): string | null => {
-               // nx, ny are normalized coordinates [0, 1] from mediapipe landmarks
-               if (!video) return null;
-               const offCanvas = document.createElement('canvas');
-               offCanvas.width = 1; 
-               offCanvas.height = 1;
-               const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
-               if (!offCtx) return null;
-               
-               // Video is rendered mirrored logically for the user.
-               // MediaPipe coordinates x=0 is the left side of the mirrored image.
-               // So in the original video frame, x is actually (1 - nx).
+               if (!video || !offCtx) return null;
                const videoX = Math.floor((1.0 - nx) * video.videoWidth);
                const videoY = Math.floor(ny * video.videoHeight);
                
@@ -122,7 +125,8 @@ export const useGameEngine = (
              activeTheme.handleGesture(hand, ctx, w, h, getX, getY, now, getColor);
           });
         }
-      }
+        } // End of AI throttle
+      } // End of video time check
 
       activeTheme.render(ctx, w, h);
       animationFrameId = requestAnimationFrame(renderLoop);

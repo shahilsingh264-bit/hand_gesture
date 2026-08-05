@@ -70,7 +70,7 @@ function App() {
     const startCamera = async () => {
       try {
         stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' }
+          video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' }
         });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
